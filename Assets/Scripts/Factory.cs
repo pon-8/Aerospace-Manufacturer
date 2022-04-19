@@ -11,7 +11,7 @@ public class Factory : MonoBehaviour
     public static Factory instance;
     public int stock;
     public Button buildButton;
-    //public Button sellButton;
+    public Button factoryButton;
     public TextMeshProUGUI stockText;
 
     // Start is called before the first frame update
@@ -22,19 +22,21 @@ public class Factory : MonoBehaviour
             instance = this;
         }
         Button bbtn = buildButton.GetComponent<Button>();
-        //Button sbtn = sellButton.GetComponent<Button>();
+        Button fbtn = factoryButton.GetComponent<Button>();
+
         bbtn.onClick.AddListener(BuildOnClick);
-        //sbtn.onClick.AddListener(SellOnClick);
+        fbtn.onClick.AddListener(UpdateOnClick);
+
+        
     }
 
-    //void SellOnClick()
-    //{
-    //    stock--;
-    //    string stockNew = Convert.ToString(stock);
-    //    stockText.SetText(stockNew);
-    //}
+    void UpdateOnClick()
+    {
+        string stockNew = Convert.ToString(stock);
+        stockText.SetText(stockNew);
+    }
 
-    void BuildOnClick()
+    public void BuildOnClick()
     {
         stock++;
         string stockNew = Convert.ToString(stock);
