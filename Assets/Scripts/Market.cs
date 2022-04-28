@@ -14,8 +14,10 @@ public class Market : MonoBehaviour
     public Button marketButton;
     public TextMeshProUGUI stockText;
     private Factory factoryObject;
+    private Money moneyObject;
     private int sellAmount = 1;
     public TMP_InputField setAmount;
+    public int sellPrice;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +30,7 @@ public class Market : MonoBehaviour
 
         // creating a component of the factory for the market script to call stock amount
         factoryObject = GetComponent<Factory>();
+        moneyObject = GetComponent<Money>();
 
         // getting button components
         Button sbtn = sellButton.GetComponent<Button>();
@@ -42,7 +45,9 @@ public class Market : MonoBehaviour
         // updating stock to Stock Amount text object
         string stockNew = Convert.ToString(factoryObject.stock);
         stockText.SetText(stockNew);
-        
+
+        sellPrice = 6;
+
         // disabling sellButton if stock less than 1
         if (factoryObject.stock < 1)
         {
@@ -82,6 +87,9 @@ public class Market : MonoBehaviour
             sellError.SetActive(false);
             // sell amount subtracted from stock and updated to screen
             factoryObject.stock = factoryObject.stock - sellAmount;
+            moneyObject.money = moneyObject.money + sellPrice * sellAmount;
+            moneyObject.balance.SetText(moneyObject.money + "€");
+
             string stockNew = Convert.ToString(factoryObject.stock);
             stockText.SetText(stockNew);
         } else
