@@ -8,16 +8,17 @@ using TMPro;
 public class Market : MonoBehaviour
 {
     //needed variables for market
-    public GameObject sellError;
+    public TextMeshProUGUI sellErrorTxt;     // text field for errors
     public static Market instance;
     public Button sellButton;
     public Button marketButton;
     public TextMeshProUGUI stockText;
-    private Factory factoryObject;
-    private Money moneyObject;
-    private int sellAmount = 1;
+    private Factory factoryObject;  // Local reference to factory script
+    private Money moneyObject;      // Local reference to money script
+    private int sellAmount;     // Default sell amount
+    private int sellPrice;
     public TMP_InputField setAmount;
-    public int sellPrice;
+    public TMP_InputField setPrice;
 
     // Start is called before the first frame update
     void Start()
@@ -28,15 +29,17 @@ public class Market : MonoBehaviour
             instance = this;
         }
 
-        // creating a component of the factory for the market script to call stock amount
+        // creating local references to Factory and Money
         factoryObject = GetComponent<Factory>();
         moneyObject = GetComponent<Money>();
 
-        // getting button components
+        // fetching button components
         Button sbtn = sellButton.GetComponent<Button>();
         Button mbtn = marketButton.GetComponent<Button>();
 
+        // fetching input field
         TMP_InputField setA = setAmount.GetComponent<TMP_InputField>();
+        TMP_InputField setP = setPrice.GetComponent<TMP_InputField>();
 
         // creating button listeners
         sbtn.onClick.AddListener(SellOnClick);
@@ -46,13 +49,8 @@ public class Market : MonoBehaviour
         string stockNew = Convert.ToString(factoryObject.stock);
         stockText.SetText(stockNew);
 
-        sellPrice = 6;
-
-        // disabling sellButton if stock less than 1
-        if (factoryObject.stock < 1)
-        {
-            sellButton.enabled = false;
-        }
+        // Resetting all errors
+        sellError(0);
     }
 
     // objects to update when market UI is entered
@@ -61,51 +59,108 @@ public class Market : MonoBehaviour
         // stock update
         string stockNew = Convert.ToString(factoryObject.stock);
         stockText.SetText(stockNew);
-        
-        // enable sellButton if stock more than 0
-        if (factoryObject.stock > 0)
-        {
-            sellButton.enabled = true;
-        }
+
+        // resetting error messages
+        sellError(0);
     }
 
     // actions when sellButton is pressed
     void SellOnClick()
     {
-        
+
+        // Does Amount field have input?
         if (setAmount.GetComponentInChildren<TMP_InputField>().text.Length > 0)
         {
+            // It has
+
+            // Take text from imput field and convert to Integer
             string sellAContent = setAmount.GetComponentInChildren<TMP_InputField>().text;
             sellAmount = Convert.ToInt32(sellAContent);
+
+            //resetting negative number error
+            sellError(0);
+
+            if (setPrice.GetComponentInChildren<TMP_InputField>().text.Length > 0)
+            {
+                // It has
+
+                string sellPContent = setPrice.GetComponentInChildren<TMP_InputField>().text;
+                sellPrice = Convert.ToInt32(sellPContent);
+
+                // is either input negative?
+                if (sellAmount < 0 || sellPrice < 0)
+                {
+                    // yup
+
+                    // Display error message
+                    sellError(2);
+                }
+                else if (sellAmount <= factoryObject.stock) // is there enough stock?
+                {
+                    // yes
+
+                    // reset errors
+                    sellError(0);
+
+                    // sell amount subtracted from stock and update balance to match.
+                    factoryObject.stock = factoryObject.stock - sellAmount;
+                    moneyObject.money = moneyObject.money + sellPrice * sellAmount;
+                    moneyObject.balance.SetText(moneyObject.money + "€");
+
+                    string stockNew = Convert.ToString(factoryObject.stock);
+                    stockText.SetText(stockNew);
+                }
+                else
+                {
+                    // No and no, display not enough stock error.
+                    sellError(1);
+                }
+            } 
+            else
+            {
+                sellError(4);
+            }
+
         } else
         {
-            sellAmount = 1;
+            // It doesn't
+
+            // Display amount error
+            sellError(3);
         }
 
-        if (sellAmount <= factoryObject.stock)
-        {
-            sellError.SetActive(false);
-            // sell amount subtracted from stock and updated to screen
-            factoryObject.stock = factoryObject.stock - sellAmount;
-            moneyObject.money = moneyObject.money + sellPrice * sellAmount;
-            moneyObject.balance.SetText(moneyObject.money + "€");
-
-            string stockNew = Convert.ToString(factoryObject.stock);
-            stockText.SetText(stockNew);
-        } else
-        {
-            sellError.SetActive(true);
-        }
+        
         
 
-        // if stock below 1 disable sell button
-        if (factoryObject.stock < 1)
-        {
-            sellButton.enabled = false;
-        }
+        
     }
 
-    
+    void sellError(int error)
+    {
+        switch (error)
+        {
+            case 1:
+                sellErrorTxt.SetText("Not enough stock!");
+                sellErrorTxt.gameObject.SetActive(true);
+                break;
+            case 2:
+                sellErrorTxt.SetText("Please type a positive number!");
+                sellErrorTxt.gameObject.SetActive(true);
+                break;
+            case 3:
+                sellErrorTxt.SetText("Please input sell amount!");
+                sellErrorTxt.gameObject.SetActive(true);
+                break;
+            case 4:
+                sellErrorTxt.SetText("Please input sell price!");
+                sellErrorTxt.gameObject.SetActive(true);
+                break;
+            default:
+                sellErrorTxt.SetText("");
+                sellErrorTxt.gameObject.SetActive(false);
+                break;
+        }
+    }
 
     // Update is called once per frame
     void Update()
