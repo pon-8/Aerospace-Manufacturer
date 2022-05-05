@@ -1,0 +1,29 @@
+
+Factory Build Button Code
+---------------------------------------------------------------------------------------
+// Is there enough money to build?
+        if (moneyObject.money >= buildCost)
+        {
+            // Enough money
+
+            // Add new build to stock
+            stock++; //change when implementing buildAmount
+
+            // Update stock
+            string stockNew = Convert.ToString(stock);
+            stockText.SetText(stockNew);
+
+            // Take build cost from money
+            moneyObject.money = moneyObject.money - buildCost;
+            moneyObject.balance.SetText(moneyObject.money + "€");
+
+            // disable build error
+            buildError.SetActive(false);
+        } else
+        {
+            // No money
+
+            // Activate buildError
+            buildError.SetActive(true);
+        }
+---------------------------------------------------------------------------------------

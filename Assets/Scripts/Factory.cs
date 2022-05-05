@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-
 /// <summary>
 /// Code Description:
 /// 
@@ -21,8 +20,9 @@ public class Factory : MonoBehaviour
     public Button buildButton;
     public Button factoryButton;        // Open factory view when pressed
     public TextMeshProUGUI stockText;
+    public TMP_InputField buildInput;
     private Money moneyObject;      // Local reference to Money script
-    public GameObject buildError;   // No money error
+    public TextMeshProUGUI buildErrorTxt;   // error txt component
 
     // Start is called before the first frame update
     void Start()
@@ -44,6 +44,8 @@ public class Factory : MonoBehaviour
         bbtn.onClick.AddListener(BuildOnClick);
         fbtn.onClick.AddListener(UpdateOnClick);
 
+        TMP_InputField setBuildA = buildInput.GetComponent<TMP_InputField>();
+
         // Setting initial build cost
         buildCost = 5;
     }
@@ -56,36 +58,67 @@ public class Factory : MonoBehaviour
         stockText.SetText(stockNew);
 
         // Disable build error
-        buildError.SetActive(false);
+        buildError(0);
     }
 
     // Tasks run when Build Button is pressed.
     public void BuildOnClick()
     {
-        // Is there enough money to build?
-        if (moneyObject.money >= buildCost)
+        if (buildInput.GetComponentInChildren<TMP_InputField>().text.Length > 0)
         {
-            // Enough money
+            int buildAmount = Convert.ToInt32(buildInput.GetComponentInChildren<TMP_InputField>().text);
 
-            // Add new build to stock
-            stock++; //change when implementing buildAmount
+            if (buildAmount > 0)
+            {
+                int totalCost = buildCost * buildAmount;
 
-            // Update stock
-            string stockNew = Convert.ToString(stock);
-            stockText.SetText(stockNew);
+                if (moneyObject.money >= totalCost)
+                {
+                    stock = stock + buildAmount;
 
-            // Take build cost from money
-            moneyObject.money = moneyObject.money - buildCost;
-            moneyObject.balance.SetText(moneyObject.money + "€");
+                    string stockNew = Convert.ToString(stock);
+                    stockText.SetText(stockNew);
 
-            // disable build error
-            buildError.SetActive(false);
+                    moneyObject.money = moneyObject.money - totalCost;
+                    moneyObject.balance.SetText(moneyObject.money + "€");
+
+                    buildError(0);
+                } else
+                {
+                    buildError(1);
+                }
+            } else
+            {
+                buildError(2);
+            }
         } else
         {
-            // No money
+            buildError(3);
+        }
+    }
 
-            // Activate buildError
-            buildError.SetActive(true);
+    void buildError(int error)
+    {
+        switch (error)
+        {
+            case 1:
+                buildErrorTxt.SetText("Not enough money!");
+                buildErrorTxt.gameObject.SetActive(true);
+                break;
+            case 2:
+                buildErrorTxt.SetText("Please type a positive number!");
+                buildErrorTxt.gameObject.SetActive(true);
+                break;
+            case 3:
+                buildErrorTxt.SetText("Please input build amount!");
+                buildErrorTxt.gameObject.SetActive(true);
+                break;
+            default:
+                buildErrorTxt.SetText("");
+                buildErrorTxt.gameObject.SetActive(false);
+                break;
         }
     }
 }
+
+
