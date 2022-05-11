@@ -27,3 +27,75 @@ Factory Build Button Code
             buildError.SetActive(true);
         }
 ---------------------------------------------------------------------------------------
+
+Money: large number abbreviation method concepts
+---------------------------------------------------------------------------------------
+void LessMoney(int newChange, int amountChange)
+
+    int change = newchange * amountChange
+
+    int loop
+    
+    while change < 0
+        newChange / 1000
+        change = newChange * amountChange
+        loop++;
+
+    String letterToAdd = letterMethod(loop)
+
+     moneyObject.money = moneyObject.money / Math.Pow(1000, loop)
+     moneyObject.money = moneyObject.money - change
+     moneyObject.balance.SetText(moneyObject.money + letterToAdd)
+
+
+string LetterMethod(int num)
+
+    switch (num)
+        case 1 return K
+        case 2 return M
+        case 3 return B
+        case 4 return t
+        case 5 return q
+        case 6 return Q
+        case 7 return s
+        case 8 return S
+
+
+
+
+
+
+    void AddBalance(int changeBalance, int changeMultiplier)
+    {
+        int changeTotal = changeBalance * changeMultiplier;
+
+        if (changeTotal < 0)
+        {
+            
+        } 
+        else if (changeTotal > 1000)
+        {
+            
+            while (changeTotal < 0)
+            {
+                changeBalance = changeBalance / 1000;
+                changeTotal = changeBalance * changeMultiplier;
+                loop++;
+            }
+
+            string letterToAdd = LetterMethod(loop);
+        }
+
+        
+    }
+
+    string LetterMethod(int num)
+    {
+        switch (num) 
+        {
+            case 1:
+                return K
+                break;
+        }
+    }
+---------------------------------------------------------------------------------------

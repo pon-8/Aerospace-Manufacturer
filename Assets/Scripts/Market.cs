@@ -95,6 +95,10 @@ public class Market : MonoBehaviour
                     // Display error message
                     sellError(2);
                 }
+                else if ((sellAmount * sellPrice) < 0)
+                {
+                    sellError(5);
+                }
                 else if (sellAmount <= factoryObject.stock) // is there enough stock?
                 {
                     // yes
@@ -153,6 +157,10 @@ public class Market : MonoBehaviour
                 break;
             case 4:
                 sellErrorTxt.SetText("Please input sell price!");
+                sellErrorTxt.gameObject.SetActive(true);
+                break;
+            case 5:
+                sellErrorTxt.SetText("Sell Price must be under 1 Billion (1,000,000,000)!");
                 sellErrorTxt.gameObject.SetActive(true);
                 break;
             default:
