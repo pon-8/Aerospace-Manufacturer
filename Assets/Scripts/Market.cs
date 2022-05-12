@@ -68,71 +68,78 @@ public class Market : MonoBehaviour
     void SellOnClick()
     {
 
-        // Does Amount field have input?
-        if (setAmount.GetComponentInChildren<TMP_InputField>().text.Length > 0)
+        try
         {
-            // It has
-
-            // Take text from imput field and convert to Integer
-            string sellAContent = setAmount.GetComponentInChildren<TMP_InputField>().text;
-            sellAmount = Convert.ToInt32(sellAContent);
-
-            //resetting negative number error
-            sellError(0);
-
-            if (setPrice.GetComponentInChildren<TMP_InputField>().text.Length > 0)
+            // Does Amount field have input?
+            if (setAmount.GetComponentInChildren<TMP_InputField>().text.Length > 0)
             {
                 // It has
 
-                string sellPContent = setPrice.GetComponentInChildren<TMP_InputField>().text;
-                sellPrice = Convert.ToInt32(sellPContent);
+                // Take text from imput field and convert to Integer
+                string sellAContent = setAmount.GetComponentInChildren<TMP_InputField>().text;
+                sellAmount = Convert.ToInt32(sellAContent);
 
-                // is either input negative?
-                if (sellAmount < 0 || sellPrice < 0)
+                //resetting negative number error
+                sellError(0);
+
+                if (setPrice.GetComponentInChildren<TMP_InputField>().text.Length > 0)
                 {
-                    // yup
+                    // It has
 
-                    // Display error message
-                    sellError(2);
-                }
-                else if ((sellAmount * sellPrice) < 0)
-                {
-                    sellError(5);
-                }
-                else if (sellAmount <= factoryObject.stock) // is there enough stock?
-                {
-                    // yes
+                    string sellPContent = setPrice.GetComponentInChildren<TMP_InputField>().text;
+                    sellPrice = Convert.ToInt32(sellPContent);
 
-                    // reset errors
-                    sellError(0);
+                    // is either input negative?
+                    if (sellAmount < 0 || sellPrice < 0)
+                    {
+                        // yup
 
-                    // sell amount subtracted from stock and update balance to match.
-                    factoryObject.stock = factoryObject.stock - sellAmount;
-                    moneyObject.money = moneyObject.money + sellPrice * sellAmount;
-                    moneyObject.balance.SetText(moneyObject.money + "€");
+                        // Display error message
+                        sellError(2);
+                    }
+                    else if ((sellAmount * sellPrice) < 0)
+                    {
+                        sellError(5);
+                    }
+                    else if (sellAmount <= factoryObject.stock) // is there enough stock?
+                    {
+                        // yes
 
-                    string stockNew = Convert.ToString(factoryObject.stock);
-                    stockText.SetText(stockNew);
+                        // reset errors
+                        sellError(0);
+
+                        // sell amount subtracted from stock and update balance to match.
+                        factoryObject.stock = factoryObject.stock - sellAmount;
+                        moneyObject.money = moneyObject.money + sellPrice * sellAmount;
+                        moneyObject.balance.SetText(moneyObject.money + "€");
+
+                        string stockNew = Convert.ToString(factoryObject.stock);
+                        stockText.SetText(stockNew);
+                    }
+                    else
+                    {
+                        // No and no, display not enough stock error.
+                        sellError(1);
+                    }
                 }
                 else
                 {
-                    // No and no, display not enough stock error.
-                    sellError(1);
+                    sellError(4);
                 }
-            } 
+
+            }
             else
             {
-                sellError(4);
+                // It doesn't
+
+                // Display amount error
+                sellError(3);
             }
-
-        } else
-        {
-            // It doesn't
-
-            // Display amount error
-            sellError(3);
         }
-
+        catch
+        {
+            sellError(5);
+        }
         
         
 
@@ -160,7 +167,7 @@ public class Market : MonoBehaviour
                 sellErrorTxt.gameObject.SetActive(true);
                 break;
             case 5:
-                sellErrorTxt.SetText("Sell Price must be under 1 Billion (1,000,000,000)!");
+                sellErrorTxt.SetText("Inputs and Total money gained must be under 2,147,483,647");
                 sellErrorTxt.gameObject.SetActive(true);
                 break;
             default:
